@@ -50,6 +50,7 @@ private:
     void update_single_(int tree_index, int l, int r, int index, T val) {
         if (l == r) {
             sum[tree_index] += val;
+            mn[tree_index] += val;
             return;
         }
         push_down(tree_index, l, r);
