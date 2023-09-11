@@ -18,27 +18,27 @@ template<typename T>
 struct SegmentTree {
 private:
     Node<T> *root;
-    int n;
+    long long n;
 
-    void init(int sz) {
+    void init(long long sz) {
         this->n = sz;
         root = new Node<T>();
     }
 
-    void build_(vector<T> &nums, Node<T> *cur, int l, int r) {
+    void build_(vector<T> &nums, Node<T> *cur, long long l, long long r) {
         if (l == r) {
             cur->sum = nums[l];
             return;
         }
         if (cur->left == nullptr) cur->left = new Node<T>();
         if (cur->right == nullptr) cur->right = new Node<T>();
-        int mid = (l + r) >> 1;
+        long long mid = (l + r) >> 1;
         build_(nums, cur->left, l, mid);
         build_(nums, cur->right, mid + 1, r);
         cur->sum = cur->left->sum + cur->right->sum;
     }
 
-    void push_down(Node<T> *cur, int len){
+    void push_down(Node<T> *cur, long long len){
         if (cur->left == nullptr) cur->left = new Node<T>();
         if (cur->right == nullptr) cur->right = new Node<T>();
         if (cur->lazy) {
@@ -50,25 +50,25 @@ private:
         }
     }
 
-    void update_(Node<T> *cur, int l, int r, int ql, int qr, T val) {
+    void update_(Node<T> *cur, long long l, long long r, long long ql, long long qr, T val) {
         if (ql <= l && r <= qr) {
             cur->lazy += val;
             cur->sum += val * (r - l + 1);
             return;
         }
         push_down(cur, r - l + 1);
-        int mid = (l + r) >> 1;
+        long long mid = (l + r) >> 1;
         if (ql <= mid) update_(cur->left, l, mid, ql, qr, val);
         if (mid < qr) update_(cur->right, mid + 1, r, ql, qr, val);
         cur->sum = cur->left->sum + cur->right->sum;
     }
 
-    int query_sum_(Node<T> *cur, int l, int r, int ql, int qr) {
+    T query_sum_(Node<T> *cur, long long l, long long r, long long ql, long long qr) {
         if (ql <= l && r <= qr) {
             return cur->sum;
         }
         push_down(cur, r - l + 1);
-        int mid = (l + r) >> 1;
+        long long mid = (l + r) >> 1;
         auto sum = T();
         if (ql <= mid) sum += query_sum_(cur->left, l, mid, ql, qr);
         if (mid < qr) sum += query_sum_(cur->right, mid + 1, r, ql, qr);
@@ -76,7 +76,7 @@ private:
     }
 
 public:
-    SegmentTree(int n = 1e9 + 1) {
+    SegmentTree(long long n = 1e9 + 1) {
         init(n);
     }
 
@@ -84,15 +84,15 @@ public:
         build_(nums, root, 0, n - 1);
     }
 
-    void update_single(int index, T val) {
+    void update_single(long long index, T val) {
         update_(root, 0, n - 1, index, index, val);
     }
 
-    void update_interval(int ql, int qr, T val) {
+    void update_interval(long long ql, long long qr, T val) {
         update_(root, 0, n - 1, ql, qr, val);
     }
 
-    T query_sum(int ql, int qr) {
+    T query_sum(long long ql, long long qr) {
         return query_sum_(root, 0, n - 1, ql, qr);
     }
 };
