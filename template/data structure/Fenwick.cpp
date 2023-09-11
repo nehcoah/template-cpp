@@ -8,6 +8,7 @@ using namespace std;
 
 template<typename T>
 struct Fenwick {
+    // 1-index rather than 0-index
     int n;
     vector<T> tree;
 
