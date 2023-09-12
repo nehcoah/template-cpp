@@ -1,5 +1,8 @@
 // 2848
 // https://leetcode.cn/problems/points-that-intersect-with-cars/description/
+// brute force
+// time: O(n^2)
+// space: O(n)
 
 class Solution {
 public:
