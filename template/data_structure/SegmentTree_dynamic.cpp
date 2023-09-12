@@ -175,8 +175,8 @@ private:
         push_down(cur, l, r);
         long long mid = (l + r) >> 1;
         auto ans = setup_mn;
-        if (mid < qr) ans = min(ans, query_mn_(cur->right, mid + 1, r, ql, qr));
         if (ql <= mid) ans = min(ans, query_mn_(cur->left, l, mid, ql, qr));
+        if (mid < qr) ans = min(ans, query_mn_(cur->right, mid + 1, r, ql, qr));
         return ans;
     }
 
