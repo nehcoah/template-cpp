@@ -27,10 +27,10 @@ private:
     long long n;
     T setup_mx, setup_mn;
 
-    void init(long long sz, T mx = T(), T mn = T()) {
+    void init (int sz, T mx, T mn) {
         this->n = sz;
-        setup_mx = mx;
-        setup_mn = mn;
+        this->setup_mx = mx;
+        this->setup_mn = mn;
         root = new Node<T>(setup_mx, setup_mn);
     }
 
@@ -183,6 +183,11 @@ private:
 public:
     SegmentTree(long long n = 1e18 + 1, T setup_mx = T(), T setup_mn = T()) {
         init(n, setup_mx, setup_mn);
+    }
+
+    SegmentTree(vector<T> &nums, T setup_mx = T(), T setup_mn = T()) {
+        init(nums.size(), setup_mx, setup_mn);
+        build_(nums, root, 0, n - 1);
     }
 
     void build(vector<T> &nums) {
