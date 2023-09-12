@@ -181,7 +181,7 @@ private:
     }
 
 public:
-    SegmentTree(long long n = 1e9 + 1, T setup_mx = T(), T setup_mn = T()) {
+    SegmentTree(long long n = 1e18 + 1, T setup_mx = T(), T setup_mn = T()) {
         init(n, setup_mx, setup_mn);
     }
 
@@ -224,4 +224,5 @@ public:
     T query_mn(long long ql, long long qr) {
         return query_mn_(root, 0, n - 1, ql, qr);
     }
+
 };
