@@ -1,6 +1,6 @@
 // 2851
 // https://leetcode.cn/problems/string-transformation/description/
-// kmp, matrix quick pow
+// kmp, matrix fast pow
 
 class Solution {
 public:
