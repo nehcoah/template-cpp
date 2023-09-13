@@ -15,9 +15,9 @@ void solve() {
     }
     if (k == 1) {
         for (int i = 0; i < n; i++) if (a[i] != i) {
-            cout << "NO" << endl;
-            return;
-        }
+                cout << "NO" << endl;
+                return;
+            }
         cout << "YES" << endl;
         return;
     }
@@ -29,11 +29,9 @@ void solve() {
             int start = cnt;
             for (int cur = i; ; cur = a[cur], cnt++) {
                 if (time[cur] != -1) {
-                    if (time[cur] >= start) {
-                        if (cnt - time[cur] != k) {
-		             cout << "NO" << endl;
-		             return;
-	                 }
+                    if (time[cur] >= start && cnt - time[cur] != k) {
+                        cout << "NO" << endl;
+                        return;
                     }
                     break;
                 }
