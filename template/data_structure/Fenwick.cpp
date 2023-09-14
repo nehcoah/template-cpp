@@ -8,7 +8,6 @@ using namespace std;
 
 template<typename T>
 struct Fenwick {
-    // 1-index rather than 0-index
     int n;
     vector<T> tree;
 
@@ -17,15 +16,17 @@ struct Fenwick {
     }
 
     void init(int sz) {
-        this->n = sz;
-        tree.assign(n, T());
+        this->n = sz + 1;
+        tree.assign(sz + 2, T());
     }
 
     void update(int pos, T val) {
+        pos++;
         for (; pos < tree.size(); pos += pos & -pos) tree[pos] += val;
     }
 
     T query(int pos) {
+        pos++;
         auto ans = T();
         for (; pos; pos -= pos & -pos) ans += tree[pos];
         return ans;
