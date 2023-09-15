@@ -23,9 +23,9 @@ struct UnionFind {
         return parent[x];
     }
 
-    void merge(int x, int y){
+    bool merge(int x, int y){
         x = find(x), y = find(y);
-        if (x == y) return;
+        if (x == y) return false;
         if (size[x] > size[y]) {
             parent[y] = x;
             size[x] += size[y];
@@ -34,6 +34,7 @@ struct UnionFind {
             size[y] += size[x];
         }
         --cnt;
+        return true;
     }
 
     bool is_connected(int x, int y) {
