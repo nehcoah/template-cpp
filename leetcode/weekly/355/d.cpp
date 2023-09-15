@@ -1,6 +1,6 @@
 // 2791
 / https://leetcode.cn/problems/count-paths-that-can-form-a-palindrome-in-a-tree/description/
-// tree
+// tree, bitmask
 
 class Solution {
 public:
