@@ -68,3 +68,32 @@ public:
         return ans;
     }
 };
+
+
+// 树形dp
+// 打家劫舍III https://leetcode.cn/problems/house-robber-iii/description/
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int rob(TreeNode* root) {
+        auto dfs = [&](auto self, auto *cur) -> pair<int, int> {
+            if (cur == nullptr) return {0, 0};
+            auto l = self(self, cur->left);
+            auto r = self(self, cur->right);
+            return {l.second + r.second + cur->val, max(l.first, l.second) + max(r.first, r.second)};
+        };
+        auto ans = dfs(dfs, root);
+        return max(ans.first, ans.second);
+    }
+};
