@@ -24,25 +24,29 @@ public:
             adj[e[1] - 1].push_back(e[0] - 1);
         }
         
+        vector<int> sz(n), nodes;
+        auto dfs = [&](auto self, int x, int pa) -> void {
+            if (isPrime[x + 1]) return;
+            nodes.push_back(x);
+            for (int y : adj[x]) {
+                if (y == pa) continue;
+                self(self, y, x);
+            }
+        };
+
         long long ans = 0;
         for (int i = 0; i < n; i++) {
             if (!isPrime[i + 1]) continue;
-            
-            int cnt = 0;
-            auto dfs = [&](auto self, int x, int pa) -> void {
-                if (isPrime[x + 1]) return;
-                cnt++;
-                for (int y : adj[x]) {
-                    if (y == pa) continue;
-                    self(self, y, x);
-                }
-            };
             long long cur = 0;
             for (int y : adj[i]) {
-                cnt = 0;
-                dfs(dfs, y, -1);
-                ans += cur * cnt;
-                cur += cnt;
+                if (isPrime[y + 1]) continue;
+                if (sz[y] == 0) {
+                    nodes.clear();
+                    dfs(dfs, y, -1);
+                    for (int z : nodes) sz[z] = nodes.size();
+                }
+                ans += cur * sz[y];
+                cur += sz[y];
             }
             ans += cur;
         }
