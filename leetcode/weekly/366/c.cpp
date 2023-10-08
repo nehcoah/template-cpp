@@ -11,10 +11,9 @@ public:
         vector<int> f(idx.size() + 1, 1e9);
         f[0] = 0;
         for (int i = 0; i < idx.size(); i++) {
-            if (i & 1) f[i + 1] = f[i] + x;
-            else f[i + 1] = f[i];
-            if (i > 0) f[i + 1] = min(f[i + 1], f[i - 1] + idx[i] - idx[i - 1]);
+            f[i + 1] = f[i] + x;
+            if (i > 0) f[i + 1] = min(f[i + 1], f[i - 1] + 2 * (idx[i] - idx[i - 1]));
         }
-        return f.back();
+        return f.back() / 2;
     }
 };
