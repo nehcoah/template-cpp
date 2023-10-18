@@ -1,3 +1,5 @@
+// written by jiangly
+
 struct Comb {
     int n;
     vector<modint> _fac;
