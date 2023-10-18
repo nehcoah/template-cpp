@@ -1,3 +1,5 @@
+// written by jiangly
+
 template<class Info, class Tag>
 struct LazySegmentTree {
     int n;
