@@ -1,11 +1,3 @@
-//
-// Created by Nehcoah on 2023/5/3.
-//
-
-#include <vector>
-
-using namespace std;
-
 template<typename T>
 struct Fenwick {
     int n;
@@ -20,7 +12,7 @@ struct Fenwick {
         tree.assign(sz + 2, T());
     }
 
-    void update(int pos, T val) {
+    void add(int pos, T val) {
         pos++;
         for (; pos < tree.size(); pos += pos & -pos) tree[pos] += val;
     }
