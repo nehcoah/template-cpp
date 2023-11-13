@@ -1,213 +1,104 @@
-//
-// Created by Nehcoah on 2023/5/3.
-//
+// template from jiangly
 
-#include <vector>
-
-using namespace std;
-
-template<typename T>
+template<class Info>
 struct SegmentTree {
-private:
     int n;
-    T setup_mx, setup_mn;
-    vector<T> val, mn, mx, lazy_add, lazy_mul, lazy_modify;
-
-    void init(int sz, T mx_, T mn_) {
-        this->n = sz;
-        this->setup_mx = mx_;
-        this->setup_mn = mn_;
-        val.assign(n * 4, T());
-        mn.assign(n * 4, setup_mn);
-        mx.assign(n * 4, setup_mx);
-        lazy_add.assign(n * 4, T());
-        lazy_mul.assign(n * 4, T(1));
-        lazy_modify.assign(n * 4, T());
+    vector<Info> info;
+    SegmentTree() : n(0) {}
+    SegmentTree(int n_, Info v_ = Info()) {
+        init(n_, v_);
     }
-
-    void build_(vector<T> &nums, int tree_index, int l, int r) {
-        if (l == r) {
-            val[tree_index] = nums[l];
-            mn[tree_index] = nums[l];
-            mx[tree_index] = nums[l];
+    template<class T>
+    SegmentTree(vector<T> init_) {
+        init(init_);
+    }
+    void init(int n_, Info v_ = Info()) {
+        init(vector(n_, v_));
+    }
+    template<class T>
+    void init(vector<T> init_) {
+        n = init_.size();
+        info.assign(4 << __lg(n), Info());
+        function<void(int, int, int)> build = [&](int p, int l, int r) {
+            if (r - l == 1) {
+                info[p] = init_[l];
+                return;
+            }
+            int m = (l + r) / 2;
+            build(2 * p, l, m);
+            build(2 * p + 1, m, r);
+            pull(p);
+        };
+        build(1, 0, n);
+    }
+    void pull(int p) {
+        info[p] = info[2 * p] + info[2 * p + 1];
+    }
+    void modify(int p, int l, int r, int x, const Info &v) {
+        if (r - l == 1) {
+            info[p] = v;
             return;
         }
-        int mid = (l + r) >> 1;
-        build_(nums, tree_index * 2 + 1, l, mid);
-        build_(nums, tree_index * 2 + 2, mid + 1, r);
-        val[tree_index] = val[tree_index * 2 + 1] + val[tree_index * 2 + 2];
-        mn[tree_index] = min(mn[tree_index * 2 + 1], mn[tree_index * 2 + 2]);
-        mx[tree_index] = max(mx[tree_index * 2 + 1], mx[tree_index * 2 + 2]);
-    }
-
-    void push_down(int tree_index, int l, int r) {
-        int mid = (l + r) >> 1;
-        // priority: modify > mul > add
-        if (lazy_modify[tree_index]) {
-            val[tree_index * 2 + 1] = lazy_modify[tree_index] * (mid - l + 1);
-            val[tree_index * 2 + 2] = lazy_modify[tree_index] * (r - mid);
-
-            mn[tree_index * 2 + 1] = mn[tree_index * 2 + 2] = lazy_modify[tree_index];
-            mx[tree_index * 2 + 1] = mx[tree_index * 2 + 2] = lazy_modify[tree_index];
-
-            lazy_modify[tree_index * 2 + 1] = lazy_modify[tree_index * 2 + 2] = lazy_modify[tree_index];
-
-            lazy_add[tree_index * 2 + 1] = lazy_add[tree_index * 2 + 2] = T();
-            lazy_mul[tree_index * 2 + 1] = lazy_mul[tree_index * 2 + 2] = T(1);
-
-            lazy_modify[tree_index] = T();
+        int m = (l + r) / 2;
+        if (x < m) {
+            modify(2 * p, l, m, x, v);
+        } else {
+            modify(2 * p + 1, m, r, x, v);
         }
-
-        val[tree_index * 2 + 1] = val[tree_index * 2 + 1] * lazy_mul[tree_index] + lazy_add[tree_index] * (mid - l + 1);
-        val[tree_index * 2 + 2] = val[tree_index * 2 + 2] * lazy_mul[tree_index] + lazy_add[tree_index] * (r - mid);
-
-        mn[tree_index * 2 + 1] = mn[tree_index * 2 + 1] * lazy_mul[tree_index] + lazy_add[tree_index];
-        mn[tree_index * 2 + 2] = mn[tree_index * 2 + 2] * lazy_mul[tree_index] + lazy_add[tree_index];
-
-        mx[tree_index * 2 + 1] = mx[tree_index * 2 + 1] * lazy_mul[tree_index] + lazy_add[tree_index];
-        mx[tree_index * 2 + 2] = mx[tree_index * 2 + 2] * lazy_mul[tree_index] + lazy_add[tree_index];
-
-        lazy_mul[tree_index * 2 + 1] *= lazy_mul[tree_index];
-        lazy_mul[tree_index * 2 + 2] *= lazy_mul[tree_index];
-        lazy_add[tree_index * 2 + 1] = lazy_add[tree_index * 2 + 1] * lazy_mul[tree_index] + lazy_add[tree_index];
-        lazy_add[tree_index * 2 + 2] = lazy_add[tree_index * 2 + 2] * lazy_mul[tree_index] + lazy_add[tree_index];
-
-        lazy_mul[tree_index] = T(1);
-        lazy_add[tree_index] = T();
+        pull(p);
     }
-
-    void modify_(int tree_index, int l, int r, int ql, int qr, T k) {
-        if (ql <= l && r <= qr) {
-            val[tree_index] = k * (r - l + 1);
-            mx[tree_index] = mn[tree_index] = k;
-            lazy_modify[tree_index] = k;
-            lazy_add[tree_index] = T();
-            lazy_mul[tree_index] = T(1);
-            return;
+    void modify(int p, const Info &v) {
+        modify(1, 0, n, p, v);
+    }
+    Info rangeQuery(int p, int l, int r, int x, int y) {
+        if (l >= y || r <= x) {
+            return Info();
         }
-        push_down(tree_index, l, r);
-        int mid = (l + r) >> 1;
-        if (ql <= mid) modify_(tree_index * 2 + 1, l, mid, ql, qr, k);
-        if (mid < qr) modify_(tree_index * 2 + 2, mid + 1, r, ql, qr, k);
-        val[tree_index] = val[tree_index * 2 + 1] + val[tree_index * 2 + 2];
-        mn[tree_index] = min(mn[tree_index * 2 + 1], mn[tree_index * 2 + 2]);
-        mx[tree_index] = max(mx[tree_index * 2 + 1], mx[tree_index * 2 + 2]);
-    }
-
-    void mul_(int tree_index, int l, int r, int ql, int qr, T k) {
-        if (ql <= l && r <= qr) {
-            val[tree_index] *= k;
-            mx[tree_index] *= k;
-            mn[tree_index] *= k;
-            lazy_add[tree_index] *= k;
-            lazy_mul[tree_index] *= k;
-            return;
+        if (l >= x && r <= y) {
+            return info[p];
         }
-        push_down(tree_index, l, r);
-        int mid = (l + r) >> 1;
-        if (ql <= mid) mul_(tree_index * 2 + 1, l, mid, ql, qr, k);
-        if (mid < qr) mul_(tree_index * 2 + 2, mid + 1, r, ql, qr, k);
-        val[tree_index] = val[tree_index * 2 + 1] + val[tree_index * 2 + 2];
-        mn[tree_index] = min(mn[tree_index * 2 + 1], mn[tree_index * 2 + 2]);
-        mx[tree_index] = max(mx[tree_index * 2 + 1], mx[tree_index * 2 + 2]);
+        int m = (l + r) / 2;
+        return rangeQuery(2 * p, l, m, x, y) + rangeQuery(2 * p + 1, m, r, x, y);
     }
-
-    void add_(int tree_index, int l, int r, int ql, int qr, T k) {
-        if (ql <= l && r <= qr) {
-            val[tree_index] += k * (r - l + 1);
-            mx[tree_index] += k;
-            mn[tree_index] += k;
-            lazy_add[tree_index] += k;
-            return;
+    Info rangeQuery(int l, int r) {
+        return rangeQuery(1, 0, n, l, r);
+    }
+    template<class F>
+    int findFirst(int p, int l, int r, int x, int y, F pred) {
+        if (l >= y || r <= x || !pred(info[p])) {
+            return -1;
         }
-        push_down(tree_index, l, r);
-        int mid = (l + r) >> 1;
-        if (ql <= mid) add_(tree_index * 2 + 1, l, mid, ql, qr, k);
-        if (mid < qr) add_(tree_index * 2 + 2, mid + 1, r, ql, qr, k);
-        val[tree_index] = val[tree_index * 2 + 1] + val[tree_index * 2 + 2];
-        mn[tree_index] = min(mn[tree_index * 2 + 1], mn[tree_index * 2 + 2]);
-        mx[tree_index] = max(mx[tree_index * 2 + 1], mx[tree_index * 2 + 2]);
-    }
-
-    T query_sum_(int tree_index, int l, int r, int ql, int qr) {
-        if (ql <= l && r <= qr) {
-            return val[tree_index];
+        if (r - l == 1) {
+            return l;
         }
-        push_down(tree_index, l, r);
-        auto sum_ = T();
-        int mid = (l + r) >> 1;
-        if (ql <= mid) sum_ += query_sum_(tree_index * 2 + 1, l, mid, ql, qr);
-        if (mid < qr) sum_ += query_sum_(tree_index * 2 + 2, mid + 1, r, ql, qr);
-        return sum_;
-    }
-
-    T query_mx_(int tree_index, int l, int r, int ql, int qr) {
-        if (ql <= l && r <= qr) {
-            return mx[tree_index];
+        int m = (l + r) / 2;
+        int res = findFirst(2 * p, l, m, x, y, pred);
+        if (res == -1) {
+            res = findFirst(2 * p + 1, m, r, x, y, pred);
         }
-        push_down(tree_index, l, r);
-        auto ans = setup_mx;
-        int mid = (l + r) >> 1;
-        if (ql <= mid) ans = max(ans, query_mx_(tree_index * 2 + 1, l, mid, ql, qr));
-        if (mid < qr) ans = max(ans, query_mx_(tree_index * 2 + 2, mid + 1, r, ql, qr));
-        return ans;
+        return res;
     }
-
-    T query_mn_(int tree_index, int l, int r, int ql, int qr) {
-        if (ql <= l && r <= qr) {
-            return mn[tree_index];
+    template<class F>
+    int findFirst(int l, int r, F pred) {
+        return findFirst(1, 0, n, l, r, pred);
+    }
+    template<class F>
+    int findLast(int p, int l, int r, int x, int y, F pred) {
+        if (l >= y || r <= x || !pred(info[p])) {
+            return -1;
         }
-        push_down(tree_index, l, r);
-        auto ans = setup_mn;
-        int mid = (l + r) >> 1;
-        if (ql <= mid) ans = min(ans, query_mn_(tree_index * 2 + 1, l, mid, ql, qr));
-        if (mid < qr) ans = min(ans, query_mn_(tree_index * 2 + 2, mid + 1, r, ql, qr));
-        return ans;
+        if (r - l == 1) {
+            return l;
+        }
+        int m = (l + r) / 2;
+        int res = findLast(2 * p + 1, m, r, x, y, pred);
+        if (res == -1) {
+            res = findLast(2 * p, l, m, x, y, pred);
+        }
+        return res;
     }
-
-public:
-    SegmentTree(int n = 1e7 + 1, T mx_ = T(), T mn_ = T()) {
-        init(n, mx_, mn_);
-    }
-
-    SegmentTree(vector<T> &nums, T mx_ = T(), T mn_ = T()) {
-        init(nums.size(), mx_, mn_);
-        build_(nums, 0, 0, n - 1);
-    }
-
-    void modify(int index, T k) {
-        modify_(0, 0, n - 1, index, index, k);
-    }
-
-    void modify(int ql, int qr, T k) {
-        modify_(0, 0, n - 1, ql, qr, k);
-    }
-
-    void mul(int index, T k) {
-        mul_(0, 0, n - 1, index, index, k);
-    }
-
-    void mul(int ql, int qr, T k) {
-        mul_(0, 0, n - 1, ql, qr, k);
-    }
-
-    void add(int index, T k) {
-        add_(0, 0, n - 1, index, index, k);
-    }
-
-    void add(int ql, int qr, T k) {
-        add_(0, 0, n - 1, ql, qr, k);
-    }
-
-    T query_sum(int ql, int qr) {
-        return query_sum_(0, 0, n - 1, ql, qr);
-    }
-
-    T query_mx(int ql, int qr) {
-        return query_mx_(0, 0, n - 1, ql, qr);
-    }
-
-    T query_mn(int ql, int qr) {
-        return query_mn_(0, 0, n - 1, ql, qr);
+    template<class F>
+    int findLast(int l, int r, F pred) {
+        return findLast(1, 0, n, l, r, pred);
     }
 };
