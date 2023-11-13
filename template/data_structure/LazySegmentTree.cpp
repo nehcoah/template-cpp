@@ -1,4 +1,4 @@
-// written by jiangly
+// template from jiangly
 
 template<class Info, class Tag>
 struct LazySegmentTree {
