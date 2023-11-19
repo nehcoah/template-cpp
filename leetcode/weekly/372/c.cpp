@@ -25,3 +25,22 @@ public:
         else return ans2 % mod;
     }
 };
+
+// class Solution {
+// public:
+//     int maximumXorProduct(long long a, long long b, int n) {
+//         const int mod = 1e9 + 7;
+//         long long x = a & ~((1LL << n) - 1), y = b & ~((1LL << n) - 1);
+//         for (int i = n - 1; i >= 0; i--) {
+//             int u = a >> i & 1, v = b >> i & 1;
+//             if (u == v) {
+//                 x |= 1LL << i;
+//                 y |= 1LL << i;
+//             } else {
+//                 if (x > y) y |= 1LL << i;
+//                 else x |= 1LL << i;
+//             }
+//         }
+//         return (x % mod) * (y % mod) % mod;
+//     }
+// };
