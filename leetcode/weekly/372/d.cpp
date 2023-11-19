@@ -26,7 +26,69 @@ public:
     }
 };
 
-// Solution with SegmentTree
+// // Solution of SparseTable + binary searsh
+// template<typename Info>
+// class SparseTable {
+//     int n;
+//     vector<vector<Info>> st;
+// public:
+//     SparseTable(const vector<Info> &v) {
+//         n = v.size();
+//         if (n == 0) return;
+//         int maxLog = 32 - __builtin_clz(n);
+//         st.resize(maxLog);
+//         st[0] = v;
+//         for (int j = 1; j < maxLog; j++) {
+//             st[j].resize(n - (1 << j) + 1);
+//             for (int i = 0; i <= n - (1 << j); i++) {
+//                 st[j][i] = st[j - 1][i] + st[j - 1][i + (1 << (j - 1))];
+//             }
+//         }
+//     }
+
+//     Info query(int l, int r) {
+//         assert(0 <= l && l <= r && r <= n - 1);
+//         int lg = 31 - __builtin_clz(r - l + 1);
+//         return st[lg][l] + st[lg][r - (1 << lg) + 1];
+//     }
+// };
+
+// struct Info {
+//     int x;
+// };
+
+// Info operator+(const Info &a, const Info &b) {
+//     return {max(a.x, b.x)};
+// }
+
+// class Solution {
+// public:
+//     vector<int> leftmostBuildingQueries(vector<int>& heights, vector<vector<int>>& queries) {
+//         int n = heights.size();
+//         vector<Info> init(n);
+//         for (int i = 0; i < n; i++) init[i] = {heights[i]};
+//         SparseTable<Info> st(init);
+//         vector<int> ans;
+//         for (auto q : queries) {
+//             int a = q[0], b = q[1];
+//             if (a > b) swap(a, b);
+//             if (a == b) ans.push_back(a);
+//             else if (heights[a] < heights[b]) ans.push_back(b);
+//             else {
+//                 int l = b + 1, r = n;
+//                 while (l < r) {
+//                     int mid = (l + r) >> 1;
+//                     if (st.query(b + 1, mid).x > heights[a]) r = mid;
+//                     else l = mid + 1;
+//                 }
+//                 ans.push_back(l == n ? -1 : l);
+//             }
+//         }
+//         return ans;
+//     }
+// };
+
+// // Solution of SegmentTree
 // template<class Info>
 // struct SegmentTree {
 //     int n;
