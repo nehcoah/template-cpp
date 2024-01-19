@@ -7,7 +7,7 @@ void solve() {
     ll x;
     cin >> x;
     if (x == 1) {
-        cout << -1 << "\n";
+        cout << 0 << "\n";
         return;
     }
     int cnt = -1;
