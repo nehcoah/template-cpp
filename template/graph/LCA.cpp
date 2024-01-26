@@ -3,12 +3,7 @@
 // LCA (Lowest Common Ancestors)
 //
 
-#include <vector>
-#include <functional>
-
-using namespace std;
-
-class TreeAncestor {
+struct TreeAncestor {
     vector<int> depth;
     vector<vector<int>> pa;
 public:
@@ -34,24 +29,30 @@ public:
         };
         dfs(0, -1);
 
-        for (int i = 0; i < m - 1; i++)
-            for (int x = 0; x < n; x++)
-                if (int p = pa[x][i]; p != -1)
+        for (int i = 0; i < m - 1; i++) {
+            for (int x = 0; x < n; x++) {
+                if (int p = pa[x][i]; p != -1) {
                     pa[x][i + 1] = pa[p][i];
+                }
+            }
+        }
     }
 
     int get_kth_ancestor(int node, int k) {
-        for (; k; k &= k - 1)
+        for (; k; k &= k - 1) {
             node = pa[node][__builtin_ctz(k)];
+        }
         return node;
     }
 
     int get_lca(int x, int y) {
-        if (depth[x] > depth[y])
+        if (depth[x] > depth[y]) {
             swap(x, y);
+        }
         y = get_kth_ancestor(y, depth[y] - depth[x]);
-        if (y == x)
+        if (y == x) {
             return x;
+        }
         for (int i = pa[x].size() - 1; i >= 0; i--) {
             int px = pa[x][i], py = pa[y][i];
             if (px != py) {
