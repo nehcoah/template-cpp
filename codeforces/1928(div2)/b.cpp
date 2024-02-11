@@ -1,0 +1,36 @@
+#include "bits/stdc++.h"
+
+using namespace std;
+using ll = long long;
+
+void solve() {
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+    }
+    sort(a.begin(), a.end());
+    a.erase(unique(a.begin(), a.end()), a.end());
+    int ans = 0;
+    for (int i = 0; i < n; i++) {
+        int l = a[i];
+        int r = lower_bound(a.begin(), a.end(), l + n) - a.begin();
+        ans = max(ans, r - i);
+    }
+    cout << ans << endl;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t;
+    cin >> t;
+
+    while (t--) {
+        solve();
+    }
+
+    return 0;
+}
