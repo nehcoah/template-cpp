@@ -32,3 +32,20 @@ public:
         return *max_element(f.begin(), f.end());
     }
 };
+
+// class Solution {
+// public:
+//     int maxSelectedElements(vector<int>& nums) {
+//         unordered_map<int, int> f;
+//         sort(nums.begin(), nums.end());
+//         for (int x : nums) {
+//             f[x + 1] = f[x] + 1;
+//             f[x] = f[x - 1] + 1;
+//         }
+//         int ans = 0;
+//         for (auto [k, v] : f) {
+//             ans = max(ans, v);
+//         }
+//         return ans;
+//     }
+// };
