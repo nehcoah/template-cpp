@@ -16,29 +16,29 @@ public:
     }
 };
 
-class Solution {
-public:
-    long long maximumStrength(vector<int> &nums, int k) {
-        int n = nums.size();
-        vector<long long> s(n + 1);
-        for (int i = 0; i < n; i++) {
-            s[i + 1] = s[i] + nums[i];
-        }
-        vector<vector<long long>> f(k + 1, vector<long long>(n + 1));
-        for (int i = 1; i <= k; i++) {
-            f[i][i - 1] = LLONG_MIN;
-            long long mx = LLONG_MIN;
-            int w = (k - i + 1) * (i % 2 ? 1 : -1);
-            for (int j = i; j <= n - k + i; j++) { // j 的上下界是因为其它子数组至少要选一个数
-                mx = max(mx, f[i - 1][j - 1] - s[j - 1] * w);
-                f[i][j] = max(f[i][j - 1], s[j] * w + mx);
-            }
-        }
-        return f[k][n];
-    }
-};
+// class Solution {
+// public:
+//     long long maximumStrength(vector<int> &nums, int k) {
+//         int n = nums.size();
+//         vector<long long> s(n + 1);
+//         for (int i = 0; i < n; i++) {
+//             s[i + 1] = s[i] + nums[i];
+//         }
+//         vector<vector<long long>> f(k + 1, vector<long long>(n + 1));
+//         for (int i = 1; i <= k; i++) {
+//             f[i][i - 1] = LLONG_MIN;
+//             long long mx = LLONG_MIN;
+//             int w = (k - i + 1) * (i % 2 ? 1 : -1);
+//             for (int j = i; j <= n - k + i; j++) { // j 的上下界是因为其它子数组至少要选一个数
+//                 mx = max(mx, f[i - 1][j - 1] - s[j - 1] * w);
+//                 f[i][j] = max(f[i][j - 1], s[j] * w + mx);
+//             }
+//         }
+//         return f[k][n];
+//     }
+// };
 
-作者：灵茶山艾府
-链接：https://leetcode.cn/problems/maximum-strength-of-k-disjoint-subarrays/solutions/2678061/qian-zhui-he-hua-fen-xing-dpshi-zi-bian-ap5z5/
-来源：力扣（LeetCode）
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+// 作者：灵茶山艾府
+// 链接：https://leetcode.cn/problems/maximum-strength-of-k-disjoint-subarrays/solutions/2678061/qian-zhui-he-hua-fen-xing-dpshi-zi-bian-ap5z5/
+// 来源：力扣（LeetCode）
+// 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
