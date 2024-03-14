@@ -6,43 +6,40 @@ using ll = long long;
 void solve() {
     int n, m;
     cin >> n >> m;
-    vector<set<int>> route(n);
-    map<int, set<int>> color;
+
+    vector<map<int, vector<int>>> adj(n);
     for (int i = 0; i < m; i++) {
         int u, v, c;
         cin >> u >> v >> c;
         u--, v--;
-        color[c].insert(u);
-        color[c].insert(v);
-        route[u].insert(c);
-        route[v].insert(c);
+        adj[u][c].push_back(v);
+        adj[v][c].push_back(u);
     }
-    int b, e, ans = 0;
-    cin >> b >> e;
-    b--, e--;
-    queue<int> q;
-    q.push(b);
-    vector<int> vis(n);
-    vis[b] = true;
-    while (!q.empty()) {
-        queue<int> nxt;
-        while (!q.empty()) {
-            int x = q.front(); q.pop();
-            if (x == e) {
-                cout << ans << endl;
-                return;
+
+    int s, e;
+    cin >> s >> e;
+    s--, e--;
+
+    map<pair<int, int>, int> dis;
+    priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<>> pq;
+    pq.emplace(0, s, 0);
+    while (!pq.empty()) {
+        auto [d, x, c] = pq.top(); pq.pop();
+        if (dis.count({x, c})) continue;
+        dis[{x, c}] = d;
+        if (c) {
+            pq.emplace(d, x, 0);
+            for (int y : adj[x][c]) {
+                pq.emplace(d, y, c);
             }
-            for (int c : route[x]) {
-                for (int y : color[c]) {
-                    if (vis[y]) continue;
-                    vis[y] = true;
-                    nxt.push(y);
-                }
+        } else {
+            for (auto &[_c, _] : adj[x]) {
+                pq.emplace(d + 1, x, _c);
             }
         }
-        q.swap(nxt);
-        ans += 1;
     }
+
+    cout << dis[{e, 0}] << endl;
 }
 
 int main() {
