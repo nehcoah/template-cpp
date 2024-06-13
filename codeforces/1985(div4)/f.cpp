@@ -21,6 +21,7 @@ void solve() {
         ll sum = 0;
         for (int i = 0; i < n; i++) {
             sum += 1ll * a[i] * (x / c[i] + 1);
+            if (sum >= h) return true;
         }
         return sum >= h;
     };
